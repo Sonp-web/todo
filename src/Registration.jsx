@@ -1,41 +1,19 @@
 import { useForm } from "react-hook-form";
 
-const Registration = ({ loadingRegistration, setLoadingRegistration }) => {
+const Registration = ({
+  onSubmitRegistration,
+  loadingRegistration,
+  success,
+}) => {
   const {
     register,
     setError,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
-  const onSubmit = async (data) => {
-    setLoadingRegistration(true);
-    try {
-      const response = await fetch(
-        "https://todo-redev.herokuapp.com/api/users/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        },
-      );
-      const result = await response.json();
-      if (!response.ok) {
-        setError("root", {
-          type: "manual",
-          message: result.message || "Ошибка регистрации",
-        });
-        return;
-      }
-    } catch (error) {
-      setError("root", {
-        type: "manual",
-        message: error.message || "Ошибка регистрации",
-      });
-    } finally {
-      setLoadingRegistration(false);
-    }
+  const handleOnSubmit = (data) => {
+    onSubmitRegistration(data, setError,reset);
   };
 
   return (
@@ -46,7 +24,7 @@ const Registration = ({ loadingRegistration, setLoadingRegistration }) => {
         </div>
       )}
       <h2>Регистрация</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(handleOnSubmit)}>
         <div>
           <label htmlFor="username">name</label>
           <input
@@ -114,6 +92,7 @@ const Registration = ({ loadingRegistration, setLoadingRegistration }) => {
         </button>
         {loadingRegistration && <div className="spinner"></div>}
       </form>
+      {success && <div>{success}</div>}
     </>
   );
 };

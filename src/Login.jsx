@@ -1,43 +1,14 @@
 import { useForm } from "react-hook-form";
-const Login = ({ setToken, loadingLogin, setLoadingLogin }) => {
+
+const Login = ({ loadingLogin, onSubmitLogin }) => {
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors },
   } = useForm();
-  const onSubmit = async (data) => {
-    setLoadingLogin(true);
-    try {
-      const response = await fetch(
-        "https://todo-redev.herokuapp.com/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        },
-      );
-
-      const result = await response.json();
-      if (!response.ok) {
-        setError("root", {
-          type: "manual",
-          message: result.message || "Ошибка регистрации",
-        });
-        return;
-      }
-      localStorage.setItem("token", result.token);
-      setToken(result.token);
-    } catch (error) {
-      setError("root", {
-        type: "manual",
-        message: error.message || "Ошибка регистрации",
-      });
-    } finally {
-      setLoadingLogin(false);
-    }
+  const handleOnSubmit = (data) => {
+    onSubmitLogin(data, setError);
   };
   return (
     <>
@@ -47,7 +18,7 @@ const Login = ({ setToken, loadingLogin, setLoadingLogin }) => {
         </div>
       )}
       <h2>Логин</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(handleOnSubmit)}>
         <div>
           <label htmlFor="email">email</label>
           <input

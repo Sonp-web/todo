@@ -1,38 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-const Input = ({
-  setTasks,
-  sortingTasks,
-  token,
-  setLoadingAdd,
-  loadingAdd,
-}) => {
+const Input = ({ setTasks, sortingTasks,postTask, loadingAdd}) => {
   const [text, setText] = useState("");
   const [isNull, setIsNull] = useState(false);
   const mainInput = useRef(null);
-
-  const postTask = async (task) => {
-    setLoadingAdd(true);
-    try {
-      const response = await fetch(
-        "https://todo-redev.herokuapp.com/api/todos",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(task),
-        },
-      );
-      if (!response.ok) throw new Error("Ошибка создания");
-      const result = await response.json();
-      return result.id;
-    } catch (error) {
-      console.log(error.message);
-    } finally {
-      setLoadingAdd(false);
-    }
-  };
 
   const add = async () => {
     if (text.trim().length == 0) {

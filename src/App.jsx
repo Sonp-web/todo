@@ -8,107 +8,31 @@ import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import Registration from "./Registration";
 import Login from "./Login";
-
+import useTasksApi from "./useTasksApi";
 function App() {
-  const [tasks, setTasks] = useState([]);
   const [newUp, setNewUp] = useState(false);
-  const [token, setToken] = useState(localStorage?.getItem("token"));
-  const [loadingAdd, setLoadingAdd] = useState(false);
-  const [loadingUpdate, setLoadingUpdate] = useState(null);
-  const [loadingGet, setLoadingGet] = useState(false);
-  const [loadingRegistration, setLoadingRegistration] = useState(false);
-  const [loadingLogin, setLoadingLogin] = useState(false);
-
-  const loadTasks = async () => {
-    setLoadingGet(true);
-    if (!token) {
-      return;
-    }
-    try {
-      const response = await fetch(
-        "https://todo-redev.herokuapp.com/api/todos",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      if (!response.ok) throw new Error("Ошибка создания");
-      const result = await response.json();
-      console.log(result);
-
-      setTasks(result);
-    } catch (error) {
-      console.log(error.message);
-    } finally {
-      setLoadingGet(false);
-    }
-  };
-  const completedTask = async (id) => {
-    try {
-      const response = await fetch(
-        `https://todo-redev.herokuapp.com/api/todos/${id}/isCompleted`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      if (!response.ok) throw new Error("Ошибка создания");
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  const patchTask = async (data, id) => {
-    setLoadingUpdate(id);
-    try {
-      const response = await fetch(
-        `https://todo-redev.herokuapp.com/api/todos/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ title: data }),
-        },
-      );
-
-      if (!response.ok) throw new Error("Ошибка создания");
-      setLoadingUpdate(null);
-    } catch (error) {
-      console.log(error.message);
-      setLoadingUpdate(null);
-    }
-  };
-
-  const deletingTask = async (id) => {
-    try {
-      const response = await fetch(
-        `https://todo-redev.herokuapp.com/api/todos/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      if (!response.ok) throw new Error("Ошибка создания");
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  useEffect(() => {
-    loadTasks();
-  }, [token]);
-
-  useEffect(() => {
-    sortingTasks();
-  }, [newUp]);
+  const {
+    loadTasks,
+    setTasks,
+    deletingTask,
+    patchTask,
+    completedTask,
+    token,
+    setLoadingAdd,
+    loadingAdd,
+    tasks,
+    setLoadingUpdate,
+    loadingUpdate,
+    loadingGet,
+    loadingRegistration,
+    postTask,
+    setToken,
+    loadingLogin,
+    setLoadingLogin,
+    onSubmitRegistration,
+    success,
+    onSubmitLogin,
+  } = useTasksApi();
 
   const sortingTasks = () => {
     setTasks((oldTasks) =>
@@ -118,6 +42,13 @@ function App() {
     );
     console.log("sort");
   };
+  useEffect(() => {
+    loadTasks();
+  }, [token]);
+
+  useEffect(() => {
+    sortingTasks();
+  }, [newUp]);
 
   const deleteTask = (id) => {
     deletingTask(id);
@@ -156,6 +87,7 @@ function App() {
             token={token}
             setLoadingAdd={setLoadingAdd}
             loadingAdd={loadingAdd}
+            postTask={postTask}
           />
           <AppRoutes
             tasks={tasks}
@@ -171,18 +103,21 @@ function App() {
             tasks={tasks}
             clearDone={clearDone}
             setNewUp={setNewUp}
+            loadingAdd={loadingAdd}
           />{" "}
         </>
       ) : (
         <>
           <Registration
-            loadingRegistration={loadingRegistration}
-            setLoadingRegistration={setLoadingRegistration}
+            onSubmitRegistration={onSubmitRegistration}
+            loadingRegistratio={loadingRegistration}
+            success={success}
           ></Registration>
           <Login
             setToken={setToken}
             loadingLogin={loadingLogin}
             setLoadingLogin={setLoadingLogin}
+            onSubmitLogin={onSubmitLogin}
           ></Login>
         </>
       )}
@@ -191,5 +126,3 @@ function App() {
 }
 
 export default App;
-
-crypto.randomUUID();
