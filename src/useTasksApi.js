@@ -1,5 +1,8 @@
 import { useState } from "react";
 function useTasksApi() {
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrlReg = import.meta.env.VITE_API_URL_REG;
+
   const [tasks, setTasks] = useState([]);
   const [token, setToken] = useState(localStorage?.getItem("token"));
 
@@ -16,15 +19,12 @@ function useTasksApi() {
       return;
     }
     try {
-      const response = await fetch(
-        "https://todo-redev.herokuapp.com/api/todos",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       if (!response.ok) throw new Error("Ошибка создания");
       const result = await response.json();
       console.log(result);
@@ -39,15 +39,12 @@ function useTasksApi() {
 
   const completedTask = async (id) => {
     try {
-      const response = await fetch(
-        `https://todo-redev.herokuapp.com/api/todos/${id}/isCompleted`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await fetch(`${apiUrl}/${id}/isCompleted`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       if (!response.ok) throw new Error("Ошибка создания");
     } catch (error) {
       console.log(error.message);
@@ -57,17 +54,14 @@ function useTasksApi() {
   const patchTask = async (data, id) => {
     setLoadingUpdate(id);
     try {
-      const response = await fetch(
-        `https://todo-redev.herokuapp.com/api/todos/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ title: data }),
+      const response = await fetch(`${apiUrl}/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({ title: data }),
+      });
 
       if (!response.ok) throw new Error("Ошибка создания");
       setLoadingUpdate(null);
@@ -79,15 +73,12 @@ function useTasksApi() {
 
   const deletingTask = async (id) => {
     try {
-      const response = await fetch(
-        `https://todo-redev.herokuapp.com/api/todos/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await fetch(`${apiUrl}/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       if (!response.ok) throw new Error("Ошибка создания");
     } catch (error) {
       console.log(error.message);
@@ -97,17 +88,14 @@ function useTasksApi() {
   const postTask = async (task) => {
     setLoadingAdd(true);
     try {
-      const response = await fetch(
-        "https://todo-redev.herokuapp.com/api/todos",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(task),
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify(task),
+      });
       if (!response.ok) throw new Error("Ошибка создания");
       const result = await response.json();
       return result.id;
@@ -121,16 +109,13 @@ function useTasksApi() {
   const onSubmitLogin = async (data, setError) => {
     setLoadingLogin(true);
     try {
-      const response = await fetch(
-        "https://todo-redev.herokuapp.com/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
+      const response = await fetch(`${apiUrlReg}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(data),
+      });
 
       const result = await response.json();
       if (!response.ok) {
@@ -155,16 +140,13 @@ function useTasksApi() {
   const onSubmitRegistration = async (data, setError, reset) => {
     setLoadingRegistration(true);
     try {
-      const response = await fetch(
-        "https://todo-redev.herokuapp.com/api/users/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
+      const response = await fetch(`${apiUrlReg}/users/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(data),
+      });
       const result = await response.json();
       if (!response.ok) {
         setError("root", {

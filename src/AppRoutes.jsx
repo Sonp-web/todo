@@ -8,47 +8,22 @@ const AppRoutes = ({
   loadingUpdate,
   loadingGet,
 }) => {
+  const tempProps = {
+    tasks,
+    deleteTask,
+    editTask,
+    doneTask,
+    loadingUpdate,
+    loadingGet,
+  };
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <TaskList
-            tasks={tasks}
-            deleteTask={deleteTask}
-            editTask={editTask}
-            doneTask={doneTask}
-            loadingUpdate={loadingUpdate}
-            loadingGet={loadingGet}
-          />
-        }
-      />
+      <Route path="/" element={<TaskList {...tempProps} filter="all" />} />
       <Route
         path="/active"
-        element={
-          <TaskList
-            tasks={tasks.filter((item) => !item.isCompleted)}
-            deleteTask={deleteTask}
-            editTask={editTask}
-            doneTask={doneTask}
-            loadingUpdate={loadingUpdate}
-            loadingGet={loadingGet}
-          />
-        }
+        element={<TaskList {...tempProps} filter="active" />}
       />
-      <Route
-        path="/done"
-        element={
-          <TaskList
-            tasks={tasks.filter((item) => item.isCompleted)}
-            deleteTask={deleteTask}
-            editTask={editTask}
-            doneTask={doneTask}
-            loadingUpdate={loadingUpdate}
-            loadingGet={loadingGet}
-          />
-        }
-      />
+      <Route path="/done" element={<TaskList {...tempProps} filter="done" />} />
     </Routes>
   );
 };
