@@ -1,30 +1,34 @@
 import { useState, useRef, useEffect } from "react";
-const Input = ({ setTasks, sortingTasks,postTask, loadingAdd}) => {
-  const [text, setText] = useState("");
+
+import { useSelector } from "react-redux";
+import { adding } from "./redux/actions/text";
+import { input, clear } from "./redux/actions/input";
+import withLogger from "./withLogger";
+
+const Input = ({ dispatch }) => {
+  const inputRedux = useSelector((state) => state.input.input);
+
   const [isNull, setIsNull] = useState(false);
   const mainInput = useRef(null);
-
-  const add = async () => {
-    if (text.trim().length == 0) {
+  const add = () => {
+    if (inputRedux.trim().length == 0) {
       setIsNull(true);
     } else {
-      const id = await postTask({ title: text });
-      setTasks((oldTasks) => [
-        ...oldTasks,
-        {
-          id,
-          title: text,
-          isCompleted: false,
-        },
-      ]);
-      sortingTasks();
-      setText("");
+      dispatch(adding(inputRedux));
+      dispatch(clear());
+      setIsNull(false);
     }
   };
   const handleClick = (e) => {
     switch (e.key) {
       case "Enter":
-        add();
+        if (inputRedux.trim().length == 0) {
+          setIsNull(true);
+        } else {
+          dispatch(adding(inputRedux));
+          dispatch(clear());
+          setIsNull(false);
+        }
         break;
       case "Escape":
         mainInput.current.blur();
@@ -36,27 +40,25 @@ const Input = ({ setTasks, sortingTasks,postTask, loadingAdd}) => {
       mainInput.current.focus();
     }
   });
+
   return (
     <div className="input">
       <div>
         <input
-          value={text}
           type="text"
+          value={inputRedux}
           ref={mainInput}
           placeholder="Введите текст задачи..."
           onChange={(e) => {
-            setText(e.target.value);
-            setIsNull(false);
+            dispatch(input(e.target.value));
           }}
           onKeyDown={handleClick}
         />
         {isNull && <p>Нельзя добавить пустую строку</p>}
       </div>
-      <button onClick={add} disabled={loadingAdd}>
-        Добавить
-      </button>
-      {loadingAdd && <div className="spinner"></div>}
+      <button onClick={add}>Добавить</button>
     </div>
   );
 };
-export default Input;
+const InputWithLog = withLogger(Input);
+export default InputWithLog;

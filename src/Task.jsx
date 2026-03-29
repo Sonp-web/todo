@@ -1,16 +1,21 @@
 import { useState, useEffect, useRef } from "react";
-const Task = ({ task, deleteTask, editTask, doneTask, loadingUpdate }) => {
+import { useSelector } from "react-redux";
+import { input, edit } from "./redux/actions/inputTask";
+import { saving, click, deleting } from "./redux/actions/text";
+import withLogger from "./withLogger";
+
+const Task = ({ task, dispatch }) => {
+  const inputTask = useSelector((state) => state.inputTask.input);
+
   const [isEdit, setIsEdit] = useState(false);
   const focusInput = useRef(null);
-  const [editText, setEditText] = useState(task.title);
-  const save = async () => {
-    if (editText.length != 0) {
-      await editTask(task.id, editText);
+  const save = () => {
+    if (inputTask.length != 0) {
       setIsEdit(false);
+      dispatch(saving(task.id, inputTask));
     }
   };
   const back = () => {
-    setEditText(task.title);
     setIsEdit(false);
   };
   const handleKeyDown = (e) => {
@@ -32,27 +37,27 @@ const Task = ({ task, deleteTask, editTask, doneTask, loadingUpdate }) => {
     <div className="task">
       <input
         type="checkbox"
-        checked={task.isCompleted}
-        value={task.isCompleted}
-        onChange={() => doneTask(task.id)}
-        disabled={loadingUpdate}
+        checked={task.isDone}
+        value={task.isDone}
+        onChange={() => dispatch(click(task.id))}
       />
       {isEdit ? (
         <input
           type="text"
-          value={editText}
+          value={inputTask}
           ref={focusInput}
-          onChange={(e) => setEditText(e.target.value)}
+          onChange={(e) => dispatch(input(e.target.value))}
           onKeyDown={handleKeyDown}
         />
       ) : (
-        <p style={task.isCompleted ? { textDecoration: "line-through" } : {}}>
-          {task.title}
+        <p style={task.isDone ? { textDecoration: "line-through" } : {}}>
+          {task.text}
         </p>
       )}
       {!isEdit && (
         <button
           onClick={() => {
+            dispatch(edit(task.text));
             setIsEdit((oldEdit) => !oldEdit);
           }}
         >
@@ -61,20 +66,14 @@ const Task = ({ task, deleteTask, editTask, doneTask, loadingUpdate }) => {
       )}
       {isEdit && (
         <>
-          <button onClick={save} disabled={loadingUpdate}>
-            Сохранить
-          </button>
-          <button onClick={back} disabled={loadingUpdate}>
-            Отмена
-          </button>
+          <button onClick={save}>Сохранить</button>
+          <button onClick={back}>Отмена</button>
         </>
       )}
 
-      <button onClick={() => deleteTask(task.id)} disabled={loadingUpdate}>
-        X
-      </button>
-      {loadingUpdate && <div className="spinner"></div>}
+      <button onClick={() => dispatch(deleting(task.id))}>X</button>
     </div>
   );
 };
-export default Task;
+const TaskWithLog = withLogger(Task);
+export default TaskWithLog;

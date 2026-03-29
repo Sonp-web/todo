@@ -1,46 +1,21 @@
-import Task from "./Task";
-const TaskList = ({
-  tasks,
-  deleteTask,
-  editTask,
-  doneTask,
-  loadingUpdate,
-  loadingGet,
-  filter,
-}) => {
-  //улучшенный фильтр
-  const filterMap = {
-    active: (task) => !task.isCompleted,
-    done: (task) => task.isCompleted,
-    all: () => true,
-  };
-  const filterFn = filterMap[filter] || filterMap.all;
-  const filteredTasks = tasks.filter(filterFn);
-  //
-  // let filteredTasks = [];
-  // switch (filter) {
-  //   case "active":
-  //     filteredTasks = tasks.filter((task) => !task.isCompleted);
-  //     break;
-  //   case "done":
-  //     filteredTasks = tasks.filter((task) => task.isCompleted);
-  //     break;
-  //   default:
-  //     filteredTasks = tasks;
-  // }
-
+import TaskWithLog from "./Task";
+import { useSelector } from "react-redux";
+const TaskList = ({ filter }) => {
+  const { tasks } = useSelector((state) => state.text);
+  const filteredTasks = tasks.filter((item) => {
+    switch (filter) {
+      case "active":
+        return item.isDone == false;
+      case "done":
+        return item.isDone == true;
+      default:
+        return item;
+    }
+  });
   return (
     <>
-      {loadingGet && <div className="spinner"></div>}
       {filteredTasks.map((item) => (
-        <Task
-          key={item.id}
-          task={item}
-          deleteTask={deleteTask}
-          editTask={editTask}
-          doneTask={doneTask}
-          loadingUpdate={loadingUpdate == item.id}
-        />
+        <TaskWithLog key={item.id} task={item} />
       ))}
     </>
   );

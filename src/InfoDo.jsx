@@ -1,18 +1,24 @@
-const InfoDo = ({ tasks, clearDone, setNewUp }) => {
+import { useSelector } from "react-redux";
+import { clearDone, newUp, newDown } from "./redux/actions/text";
+import withLogger from "./withLogger";
+const InfoDo = ({ dispatch }) => {
+  const tasks = useSelector((state) => state.text.tasks);
   return (
     <div className="notDone">
-      <p>Осталось дел {tasks.filter((item) => !item.isCompleted).length}</p>
-      <button onClick={clearDone}>Очистить выполненные</button>
+      <p>Осталось дел {tasks.filter((item) => !item.isDone).length}</p>
+      <button onClick={() => dispatch(clearDone())}>
+        Очистить выполненные
+      </button>
       <button
         onClick={() => {
-          setNewUp(true);
+          dispatch(newUp());
         }}
       >
         Новые сверху
       </button>
       <button
         onClick={() => {
-          setNewUp(false);
+          dispatch(newDown());
         }}
       >
         Новые снизу
@@ -20,4 +26,5 @@ const InfoDo = ({ tasks, clearDone, setNewUp }) => {
     </div>
   );
 };
-export default InfoDo;
+const InfoDoWithLog = withLogger(InfoDo);
+export default InfoDoWithLog;
