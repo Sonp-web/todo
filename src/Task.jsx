@@ -1,18 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-import { input, edit } from "./redux/actions/inputTask";
-import { saving, click, deleting } from "./redux/actions/text";
+import { changeTask, editTask } from "./redux/slices/inputTaskSlice";
+import { saving, click, deleting } from "./redux/slices/textSlice";
 import withLogger from "./withLogger";
 
 const Task = ({ task, dispatch }) => {
-  const inputTask = useSelector((state) => state.inputTask.input);
+  const inputTask = useSelector((state) => state.inputTask.value);
 
   const [isEdit, setIsEdit] = useState(false);
   const focusInput = useRef(null);
   const save = () => {
     if (inputTask.length != 0) {
       setIsEdit(false);
-      dispatch(saving(task.id, inputTask));
+      dispatch(saving({ id: task.id, inputTask }));
     }
   };
   const back = () => {
@@ -46,7 +46,7 @@ const Task = ({ task, dispatch }) => {
           type="text"
           value={inputTask}
           ref={focusInput}
-          onChange={(e) => dispatch(input(e.target.value))}
+          onChange={(e) => dispatch(changeTask(e.target.value))}
           onKeyDown={handleKeyDown}
         />
       ) : (
@@ -57,7 +57,7 @@ const Task = ({ task, dispatch }) => {
       {!isEdit && (
         <button
           onClick={() => {
-            dispatch(edit(task.text));
+            dispatch(editTask(task.text));
             setIsEdit((oldEdit) => !oldEdit);
           }}
         >

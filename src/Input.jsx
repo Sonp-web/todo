@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 
 import { useSelector } from "react-redux";
-import { adding } from "./redux/actions/text";
-import { input, clear } from "./redux/actions/input";
+import { adding } from "./redux/slices/textSlice";
+import { input, clear } from "./redux/slices/inputSlice";
 import withLogger from "./withLogger";
 
 const Input = ({ dispatch }) => {
-  const inputRedux = useSelector((state) => state.input.input);
+  const inputRedux = useSelector((state) => state.input.value);
 
   const [isNull, setIsNull] = useState(false);
   const mainInput = useRef(null);

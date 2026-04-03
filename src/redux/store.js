@@ -1,14 +1,14 @@
-import { legacy_createStore as createStore, combineReducers } from "redux";
-import textReducer from "./reducers/textReducer";
-import inputReducer from "./reducers/inputReducer";
-import inputTaskReducer from "./reducers/inputTaskReducer";
+import { configureStore } from "@reduxjs/toolkit";
+import inputSlice from "./slices/inputSlice";
+import textSlice from "./slices/textSlice";
+import inputTaskSlice from "./slices/inputTaskSlice";
 
-const rootReducer = combineReducers({
-  text: textReducer,
-  input: inputReducer,
-  inputTask: inputTaskReducer,
+const store = configureStore({
+  reducer: {
+    text: textSlice,
+    input: inputSlice,
+    inputTask: inputTaskSlice,
+  },
 });
-
-const store = createStore(rootReducer);
 
 export default store;

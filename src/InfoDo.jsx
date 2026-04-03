@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { clearDone, newUp, newDown } from "./redux/actions/text";
+import { clearDone, newUp, newDown } from "./redux/slices/textSlice";
 import withLogger from "./withLogger";
 const InfoDo = ({ dispatch }) => {
   const tasks = useSelector((state) => state.text.tasks);
