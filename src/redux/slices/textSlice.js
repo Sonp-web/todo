@@ -1,13 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+import { sorting } from "../../helpers/taskHelpers";
 const initialState = {
   tasks: [],
   newUp: false,
-};
-const sorting = (array, state) => {
-  return array.sort((a, b) =>
-    state.newUp ? b.date - a.date : a.date - b.date,
-  );
 };
 const textSlice = createSlice({
   name: "text",
@@ -20,39 +15,21 @@ const textSlice = createSlice({
         isDone: false,
         date: Date.now(),
       });
-      sorting(state.tasks, state);
+      sorting(state.tasks, state.newUp);
     },
     saving(state, action) {
-      state.tasks = sorting(
-        state.tasks.map((item) => {
-          return item.id == action.payload.id
-            ? { ...item, text: action.payload.inputTask }
-            : item;
-        }),
-        state,
-      );
+      const temp = state.tasks.find((item) => item.id == action.payload.id);
+      temp.text = action.payload.inputTask;
     },
     click(state, action) {
-      state.tasks = sorting(
-        state.tasks.map((item) => {
-          return item.id == action.payload
-            ? { ...item, isDone: !item.isDone }
-            : item;
-        }),
-        state,
-      );
+      const temp = state.tasks.find((item) => item.id == action.payload);
+      temp.isDone = !temp.isDone;
     },
     deleting(state, action) {
-      state.tasks = sorting(
-        state.tasks.filter((item) => item.id != action.payload),
-        state,
-      );
+      state.tasks = state.tasks.filter((item) => item.id !== action.payload);
     },
     clearDone(state) {
-      state.tasks = sorting(
-        state.tasks.filter((item) => !item.isDone),
-        state,
-      );
+      state.tasks = state.tasks.filter((item) => !item.isDone);
     },
     newUp(state) {
       state.tasks.sort((a, b) => b.date - a.date);

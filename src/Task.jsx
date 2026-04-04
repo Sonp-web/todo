@@ -3,9 +3,10 @@ import { useSelector } from "react-redux";
 import { changeTask, editTask } from "./redux/slices/inputTaskSlice";
 import { saving, click, deleting } from "./redux/slices/textSlice";
 import withLogger from "./withLogger";
+import { selectInputTask } from "./redux/slices/inputTaskSlice";
 
 const Task = ({ task, dispatch }) => {
-  const inputTask = useSelector((state) => state.inputTask.value);
+  const inputTask = useSelector(selectInputTask);
 
   const [isEdit, setIsEdit] = useState(false);
   const focusInput = useRef(null);
