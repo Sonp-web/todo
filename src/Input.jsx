@@ -1,23 +1,19 @@
 import { useState, useRef, useEffect } from "react";
-const Input = ({ setTasks, sortingTasks,postTask, loadingAdd}) => {
+import { postTask } from "./redux/slices/tasksSlice";
+import { useDispatch, useSelector } from "react-redux";
+const Input = () => {
   const [text, setText] = useState("");
   const [isNull, setIsNull] = useState(false);
   const mainInput = useRef(null);
+
+  const dispatch = useDispatch();
+  const loadingPost = useSelector((state) => state.tasks.loadingPost);
 
   const add = async () => {
     if (text.trim().length == 0) {
       setIsNull(true);
     } else {
-      const id = await postTask({ title: text });
-      setTasks((oldTasks) => [
-        ...oldTasks,
-        {
-          id,
-          title: text,
-          isCompleted: false,
-        },
-      ]);
-      sortingTasks();
+      dispatch(postTask({ title: text }));
       setText("");
     }
   };
@@ -52,10 +48,10 @@ const Input = ({ setTasks, sortingTasks,postTask, loadingAdd}) => {
         />
         {isNull && <p>Нельзя добавить пустую строку</p>}
       </div>
-      <button onClick={add} disabled={loadingAdd}>
+      <button onClick={add} disabled={loadingPost}>
         Добавить
       </button>
-      {loadingAdd && <div className="spinner"></div>}
+      {loadingPost && <div className="spinner"></div>}
     </div>
   );
 };

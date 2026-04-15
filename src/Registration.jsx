@@ -1,10 +1,7 @@
 import { useForm } from "react-hook-form";
-
-const Registration = ({
-  onSubmitRegistration,
-  loadingRegistration,
-  success,
-}) => {
+import { fetchRegister } from "./redux/slices/registrationSlice";
+import { useDispatch, useSelector } from "react-redux";
+const Registration = ({ success }) => {
   const {
     register,
     setError,
@@ -12,8 +9,12 @@ const Registration = ({
     formState: { errors },
     reset,
   } = useForm();
+  const dispatch = useDispatch();
+  const loadingRegister = useSelector((state) => state.reg.loadingRegister);
   const handleOnSubmit = (data) => {
-    onSubmitRegistration(data, setError,reset);
+    dispatch(fetchRegister(data));
+    reset();
+    //onSubmitRegistration(data, setError, reset);
   };
 
   return (
@@ -87,10 +88,10 @@ const Registration = ({
           />
           {errors.username && <p>{errors.age.message}</p>}
         </div>
-        <button type="submit" disabled={loadingRegistration}>
+        <button type="submit" disabled={loadingRegister}>
           Зарегистрироваться
         </button>
-        {loadingRegistration && <div className="spinner"></div>}
+        {loadingRegister && <div className="spinner"></div>}
       </form>
       {success && <div>{success}</div>}
     </>
