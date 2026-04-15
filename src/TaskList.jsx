@@ -1,13 +1,8 @@
 import Task from "./Task";
-const TaskList = ({
-  tasks,
-  deleteTask,
-  editTask,
-  doneTask,
-  loadingUpdate,
-  loadingGet,
-  filter,
-}) => {
+import { useSelector } from "react-redux";
+const TaskList = ({ filter }) => {
+  const tasks = useSelector((state) => state.tasks.tasks);
+  const loadingAdd = useSelector((state) => state.tasks.loadingAdd);
   //улучшенный фильтр
   const filterMap = {
     active: (task) => !task.isCompleted,
@@ -31,16 +26,9 @@ const TaskList = ({
 
   return (
     <>
-      {loadingGet && <div className="spinner"></div>}
+      {loadingAdd && <div className="spinner"></div>}
       {filteredTasks.map((item) => (
-        <Task
-          key={item.id}
-          task={item}
-          deleteTask={deleteTask}
-          editTask={editTask}
-          doneTask={doneTask}
-          loadingUpdate={loadingUpdate == item.id}
-        />
+        <Task key={item.id} task={item} />
       ))}
     </>
   );
