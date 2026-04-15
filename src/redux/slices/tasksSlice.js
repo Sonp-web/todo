@@ -90,14 +90,19 @@ export const patchTask = createAsyncThunk(
 const initialState = {
   tasks: [],
   loadingAdd: false,
-  loadingDelete: false,
   loadingCompleted: false,
   loadingPost: false,
   loadingPatch: false,
+  newUp: false,
 };
 const tasksSlice = createSlice({
   name: "tasks",
   initialState,
+  reducers: {
+    setNewUp(state, action) {
+      state.newUp = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getTasks.fulfilled, (state, action) => {
@@ -108,11 +113,7 @@ const tasksSlice = createSlice({
         state.loadingAdd = true;
       })
       .addCase(deleteTask.fulfilled, (state, action) => {
-        state.loadingDelete = false;
         state.tasks = state.tasks.filter((item) => item.id != action.payload);
-      })
-      .addCase(deleteTask.pending, (state, action) => {
-        state.loadingDelete = action.meta.arg;
       })
       .addCase(completedTask.fulfilled, (state, action) => {
         let temp = state.tasks.find((item) => item.id == action.payload[0].id);
@@ -143,3 +144,4 @@ const tasksSlice = createSlice({
   },
 });
 export default tasksSlice.reducer;
+export const { setNewUp } = tasksSlice.actions;
